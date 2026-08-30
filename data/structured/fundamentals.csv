@@ -1,0 +1,4 @@
+ticker,company,fiscal_year,currency,unit,revenue,net_income,total_equity,total_debt,source_note
+AAPL,Apple Inc.,2024,USD,millions,391035,93736,569500,106629,Seed placeholder — replace with figures from the downloaded 10-K (Item 8)
+MSFT,Microsoft Corp.,2024,USD,millions,245122,88136,268477,67127,Seed placeholder — replace with figures from the downloaded 10-K (Item 8)
+GOOGL,Alphabet Inc.,2024,USD,millions,350018,100118,325080,25541,Seed placeholder — replace with figures from the downloaded 10-K (Item 8)
