@@ -23,16 +23,26 @@ Récupérer 2–3 **10-K** SEC (EDGAR) + un CSV de fondamentaux **seedés** pour
 
 ---
 
-## Phase 1 — Corpus EDGAR (en cours)
+## Phase 2 — Worker RAG (fait)
 
-### Pourquoi EDGAR / 10-K ?
+### HTML iXBRL, pas PDF
 
-Les 10-K US sont **publics**, standardisés, et réalistes pour un pitch « analyse financière ». Pas besoin de data room privée.
+Les 10-K EDGAR récents sont souvent du **XHTML inline XBRL** (une seule ligne géante). On parse avec BeautifulSoup/`lxml`, on enlève `script` / `ix:header`, puis `get_text`.
 
-### User-Agent SEC
+### MiniLM + FAISS
 
-La SEC exige un User-Agent identifiant (app + contact). Sans ça → 403. Variable `SEC_USER_AGENT` dans `.env`.
+Embeddings : `sentence-transformers/all-MiniLM-L6-v2` via LangChain `HuggingFaceEmbeddings`.  
+Index : **FAISS** persisté dans `data/index/` (gitignore). Rebuild : `uv run python scripts/build_index.py`.
 
-### Gros fichiers hors git
+### Retrieve hybride
 
-Les filings pèsent souvent plusieurs Mo (HTML). On les **gitignore** (`data/raw/**`) et on versionne seulement `manifest.json` + le script `scripts/fetch_edgar.py`. Sur une machine neuve : `uv run python scripts/fetch_edgar.py`.
+Comme DocuSafe : similarité vectorielle **+** overlap lexical de tokens, puis fusion dédupliquée. Le lexical sauve les mots-clés exacts (ticker, « Item 1A », etc.).
+
+### Grade → generate | refuse
+
+Si les chunks ne portent pas sur la question → **refuse** (pas d’invention).  
+Generate : citations `[AAPL-C0012]`, interdiction d’inventer des chiffres, pas de reco d’achat/vente.
+
+### Truncation
+
+On coupe chaque filing à ~180k caractères pour garder l’index raisonnable sur un laptop. Suffisant pour une démo ; en prod on indexerait par section Item.

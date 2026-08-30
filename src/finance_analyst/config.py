@@ -18,7 +18,7 @@ STRUCTURED_DIR = DATA_DIR / "structured"
 INDEX_DIR = DATA_DIR / "index"
 
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini").strip().lower()
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 EMBEDDING_MODEL = os.getenv(
     "EMBEDDING_MODEL",
     "sentence-transformers/all-MiniLM-L6-v2",

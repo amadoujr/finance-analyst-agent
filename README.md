@@ -74,7 +74,7 @@ Utilisateur → Supervisor
 |---|---|
 | Scaffold + docs | fait |
 | Corpus EDGAR + fondamentaux | fait (filings locaux + CSV seed) |
-| Worker RAG | à faire |
+| Worker RAG | fait (FAISS + MiniLM + CLI ask) |
 | Worker Calcul | à faire |
 | Supervisor + SSE | à faire |
 | Langfuse | à faire |
@@ -94,7 +94,13 @@ uv sync
 # Télécharger les 10-K (une fois) → data/raw/
 uv run python scripts/fetch_edgar.py
 
-uv run python -m finance_analyst
+# Construire l’index FAISS (une fois, ou après nouveau corpus)
+uv run python scripts/build_index.py
+
+# Poser une question (RAG)
+uv run python -m finance_analyst "What are Apple's principal risk factors?"
+uv run python -m finance_analyst --ticker MSFT "How does Microsoft describe AI risks?"
+
 uv run uvicorn finance_analyst.api:app --reload --port 8080
 # → http://127.0.0.1:8080/health
 ```
