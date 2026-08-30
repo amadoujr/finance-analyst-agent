@@ -23,6 +23,7 @@ build/
 # Data (large filings — fetch via scripts)
 data/raw/**
 !data/raw/.gitkeep
+!data/raw/manifest.json
 data/index/**
 !data/index/.gitkeep
 

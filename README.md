@@ -72,8 +72,8 @@ Utilisateur → Supervisor
 
 | Phase | Statut |
 |---|---|
-| Scaffold + docs | en cours |
-| Corpus EDGAR + fondamentaux | à faire |
+| Scaffold + docs | fait |
+| Corpus EDGAR + fondamentaux | fait (filings locaux + CSV seed) |
 | Worker RAG | à faire |
 | Worker Calcul | à faire |
 | Supervisor + SSE | à faire |
@@ -88,8 +88,11 @@ Prérequis : Python ≥ 3.11, [`uv`](https://github.com/astral-sh/uv), clé Gemi
 
 ```bash
 cd finance-analyst-agent
-cp .env.example .env   # renseigner GOOGLE_API_KEY
+cp .env.example .env   # renseigner GOOGLE_API_KEY (+ SEC_USER_AGENT pour le fetch)
 uv sync
+
+# Télécharger les 10-K (une fois) → data/raw/
+uv run python scripts/fetch_edgar.py
 
 uv run python -m finance_analyst
 uv run uvicorn finance_analyst.api:app --reload --port 8080

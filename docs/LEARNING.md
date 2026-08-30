@@ -19,4 +19,20 @@ En finance, le risque n’est pas seulement technique : une phrase du type « ac
 
 ### Prochaine phase
 
-Récupérer 2–3 **10-K** SEC (EDGAR) + un CSV de fondamentaux **seedés à la main** pour le worker Calcul. Pourquoi seedé ? Pour que les ratios soient **vérifiables** et que le LLM ne « invente » pas le chiffre source.
+Récupérer 2–3 **10-K** SEC (EDGAR) + un CSV de fondamentaux **seedés** pour le worker Calcul. Pourquoi seedé ? Pour que les ratios soient **vérifiables** et que le LLM ne « invente » pas le chiffre source.
+
+---
+
+## Phase 1 — Corpus EDGAR (en cours)
+
+### Pourquoi EDGAR / 10-K ?
+
+Les 10-K US sont **publics**, standardisés, et réalistes pour un pitch « analyse financière ». Pas besoin de data room privée.
+
+### User-Agent SEC
+
+La SEC exige un User-Agent identifiant (app + contact). Sans ça → 403. Variable `SEC_USER_AGENT` dans `.env`.
+
+### Gros fichiers hors git
+
+Les filings pèsent souvent plusieurs Mo (HTML). On les **gitignore** (`data/raw/**`) et on versionne seulement `manifest.json` + le script `scripts/fetch_edgar.py`. Sur une machine neuve : `uv run python scripts/fetch_edgar.py`.
