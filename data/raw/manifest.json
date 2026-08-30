@@ -1,0 +1,29 @@
+[
+  {
+    "ticker": "AAPL",
+    "name": "Apple Inc.",
+    "cik": "0000320193",
+    "filing_date": "2025-10-31",
+    "accession": "0000320193-25-000079",
+    "file": "AAPL_2025-10-31_aapl-20250927.htm",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm"
+  },
+  {
+    "ticker": "MSFT",
+    "name": "Microsoft Corp.",
+    "cik": "0000789019",
+    "filing_date": "2026-07-29",
+    "accession": "0001193125-26-323660",
+    "file": "MSFT_2026-07-29_msft-20260630.htm",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm"
+  },
+  {
+    "ticker": "GOOGL",
+    "name": "Alphabet Inc.",
+    "cik": "0001652044",
+    "filing_date": "2026-02-05",
+    "accession": "0001652044-26-000018",
+    "file": "GOOGL_2026-02-05_goog-20251231.htm",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm"
+  }
+]
