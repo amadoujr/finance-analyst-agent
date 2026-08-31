@@ -76,7 +76,7 @@ Utilisateur → Supervisor
 | Corpus EDGAR + fondamentaux | fait (filings locaux + CSV seed) |
 | Worker RAG | fait (FAISS + MiniLM + CLI ask) |
 | Worker Calcul | fait (ratios CSV + tests + CLI --calc) |
-| Supervisor + SSE | à faire |
+| Supervisor + SSE | fait (LangGraph route rag/calc/both) |
 | Langfuse | à faire |
 | HITL + UI | à faire |
 | Éval + CI | à faire |
@@ -97,14 +97,15 @@ uv run python scripts/fetch_edgar.py
 # Construire l’index FAISS (une fois, ou après nouveau corpus)
 uv run python scripts/build_index.py
 
-# Poser une question (RAG)
-uv run python -m finance_analyst "What are Apple's principal risk factors?"
-uv run python -m finance_analyst --ticker MSFT "How does Microsoft describe AI risks?"
+# Supervisor (défaut) — route automatique
+uv run python -m finance_analyst --ticker AAPL "ROE and main risk factors?"
 
-uv run python -m finance_analyst --calc --ticker AAPL "What is the ROE and net margin?"
+# Workers seuls
+uv run python -m finance_analyst --rag --ticker AAPL "risk factors?"
+uv run python -m finance_analyst --calc --ticker AAPL "What is the ROE?"
 
 uv run uvicorn finance_analyst.api:app --reload --port 8080
-# → http://127.0.0.1:8080/health
+# POST http://127.0.0.1:8080/ask  (SSE)
 ```
 
 ## Documentation pédagogique
@@ -115,7 +116,7 @@ Le README = vue **produit / recruteur**. Les détails « pourquoi c’est compli
 |---|---|
 | [`docs/LEARNING.md`](docs/LEARNING.md) | Fil conducteur phase par phase |
 | `docs/RAG_FINANCE.md` | PDF, chunking, hallucinations chiffres |
-| `docs/LANGGRAPH_GRAPH.md` | State, nodes, edges, interrupt |
+| `docs/LANGGRAPH_GRAPH.md` | State, nodes, edges, SSE |
 | `docs/HITL_GOVERNANCE.md` | Pourquoi bloquer les reco |
 | `docs/OBSERVABILITY.md` | Langfuse vs logs / vs LangSmith |
 | `docs/GCP_CLOUDRUN.md` | Pas-à-pas GCP pour débutants |

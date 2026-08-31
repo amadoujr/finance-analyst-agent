@@ -69,3 +69,21 @@ uv run uv sync --extra dev && uv run pytest
 ```
 
 Prochaine étape : **supervisor LangGraph** qui route RAG vs Calcul selon la question.
+
+---
+
+## Phase 4 — Supervisor LangGraph (fait)
+
+### Un graphe, pas trois CLIs
+
+Le supervisor **classifie** la question (`rag` / `calc` / `both`) puis exécute les workers existants. Les workers ne sont pas réécrits — le graphe les **orchestre**.
+
+### Heuristique avant LLM
+
+Le routing V1 est **testable** (mots-clés ROE, risk, margin…). Pas besoin d’appeler Gemini pour savoir si la question est quantitative.
+
+### SSE
+
+`POST /ask` sur FastAPI = même pattern que les labs `langchain-lab` (events `step` + `final`). Prêt pour une UI React.
+
+Prochaine étape : **Langfuse** (traces par nœud) puis **HITL**.
