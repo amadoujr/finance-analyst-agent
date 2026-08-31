@@ -46,3 +46,26 @@ Generate : citations `[AAPL-C0012]`, interdiction d’inventer des chiffres, pas
 ### Truncation
 
 On coupe chaque filing à ~180k caractères pour garder l’index raisonnable sur un laptop. Suffisant pour une démo ; en prod on indexerait par section Item.
+
+---
+
+## Phase 3 — Worker Calcul (fait)
+
+### Pourquoi un CSV seedé ?
+
+Les montants dans un 10-K HTML sont difficiles à extraire sans pipeline XBRL complet. Pour V1, on met les **inputs** dans `fundamentals.csv` (vérifiables) et on laisse le **code** calculer les ratios. Le LLM ne fait pas l’arithmétique — il peut seulement *expliquer* (`--calc-llm`).
+
+### Ratios V1
+
+- Marge nette = `net_income / revenue`
+- ROE = `net_income / total_equity`
+- Dette / capitaux propres = `total_debt / total_equity`
+
+### CLI
+
+```bash
+uv run python -m finance_analyst --calc --ticker AAPL "What is the ROE?"
+uv run uv sync --extra dev && uv run pytest
+```
+
+Prochaine étape : **supervisor LangGraph** qui route RAG vs Calcul selon la question.

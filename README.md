@@ -75,7 +75,7 @@ Utilisateur → Supervisor
 | Scaffold + docs | fait |
 | Corpus EDGAR + fondamentaux | fait (filings locaux + CSV seed) |
 | Worker RAG | fait (FAISS + MiniLM + CLI ask) |
-| Worker Calcul | à faire |
+| Worker Calcul | fait (ratios CSV + tests + CLI --calc) |
 | Supervisor + SSE | à faire |
 | Langfuse | à faire |
 | HITL + UI | à faire |
@@ -100,6 +100,8 @@ uv run python scripts/build_index.py
 # Poser une question (RAG)
 uv run python -m finance_analyst "What are Apple's principal risk factors?"
 uv run python -m finance_analyst --ticker MSFT "How does Microsoft describe AI risks?"
+
+uv run python -m finance_analyst --calc --ticker AAPL "What is the ROE and net margin?"
 
 uv run uvicorn finance_analyst.api:app --reload --port 8080
 # → http://127.0.0.1:8080/health

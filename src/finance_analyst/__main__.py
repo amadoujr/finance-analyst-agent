@@ -1,8 +1,7 @@
-"""CLI — RAG worker (index must exist).
+"""CLI — RAG or Calc workers.
 
-  uv run python -m finance_analyst
-  uv run python -m finance_analyst "What are Apple's main risk factors?"
-  uv run python -m finance_analyst --ticker AAPL "Describe the business"
+  uv run python -m finance_analyst "What are Apple's risk factors?" --ticker AAPL
+  uv run python -m finance_analyst --calc --ticker AAPL "What is the ROE?"
 """
 
 from __future__ import annotations
@@ -14,12 +13,32 @@ from finance_analyst import __version__
 from finance_analyst.config import DISCLAIMER, GEMINI_MODEL, LLM_PROVIDER
 
 
+def _print_result(answer: str, citations: list[dict[str, str]]) -> None:
+    print("\n--- Answer ---")
+    print(answer)
+    if citations:
+        print("\n--- Citations ---")
+        for c in citations:
+            cid = c.get("chunk_id", "?")
+            print(f"  [{cid}] {c.get('ticker', '')} · {c.get('source', '')}")
+            excerpt = c.get("excerpt", "")
+            if excerpt:
+                print(f"      {excerpt[:160]}…")
+
+
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Finance analyst — RAG CLI")
+    parser = argparse.ArgumentParser(description="Finance analyst CLI")
     parser.add_argument("question", nargs="?", help="Question to ask")
+    parser.add_argument("--ticker", help="Ticker filter (AAPL, MSFT, GOOGL)")
     parser.add_argument(
-        "--ticker",
-        help="Optional ticker filter (AAPL, MSFT, GOOGL)",
+        "--calc",
+        action="store_true",
+        help="Use Calc worker (ratios on fundamentals.csv) instead of RAG",
+    )
+    parser.add_argument(
+        "--calc-llm",
+        action="store_true",
+        help="Calc worker + LLM narrative (still uses Python for numbers)",
     )
     args = parser.parse_args(argv)
 
@@ -37,20 +56,27 @@ def main(argv: list[str] | None = None) -> None:
     if not question:
         print(
             "Usage:\n"
-            '  uv run python -m finance_analyst "What does Microsoft say about AI risks?"\n'
-            "  uv run python scripts/build_index.py   # once after fetch_edgar"
+            '  uv run python -m finance_analyst "risk factors?" --ticker AAPL\n'
+            '  uv run python -m finance_analyst --calc --ticker AAPL "What is the ROE?"\n'
+            "  uv run python scripts/build_index.py"
         )
+        return
+
+    if args.calc or args.calc_llm:
+        from finance_analyst.calc.worker import ask_calc
+
+        result = ask_calc(
+            question,
+            ticker=args.ticker,
+            use_llm_narrative=args.calc_llm,
+        )
+        _print_result(result["answer"], result["citations"])
         return
 
     from finance_analyst.rag.worker import ask_rag
 
     result = ask_rag(question, ticker=args.ticker)
-    print("\n--- Answer ---")
-    print(result["answer"])
-    print("\n--- Citations ---")
-    for c in result["citations"]:
-        print(f"  [{c['chunk_id']}] {c['ticker']} · {c['source']}")
-        print(f"      {c['excerpt'][:160]}…")
+    _print_result(result["answer"], result["citations"])
 
 
 if __name__ == "__main__":
