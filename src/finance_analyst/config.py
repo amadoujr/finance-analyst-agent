@@ -24,6 +24,12 @@ EMBEDDING_MODEL = os.getenv(
     "sentence-transformers/all-MiniLM-L6-v2",
 )
 
+LANGFUSE_HOST = (
+    os.getenv("LANGFUSE_HOST")
+    or os.getenv("LANGFUSE_BASE_URL")
+    or "https://cloud.langfuse.com"
+).strip()
+
 DISCLAIMER = (
     "Ceci n’est pas un conseil d’investissement. "
     "Assistant pédagogique basé sur un corpus et des faits seedés."

@@ -16,6 +16,8 @@ from pydantic import BaseModel, Field
 from finance_analyst import __version__
 from finance_analyst.config import DISCLAIMER, GEMINI_MODEL, LLM_PROVIDER
 from finance_analyst.graph.runner import stream_analyze
+from finance_analyst.observability.langfuse import langfuse_enabled
+from finance_analyst.observability.langfuse import langfuse_enabled
 
 app = FastAPI(
     title="finance-analyst-agent",
@@ -78,6 +80,7 @@ def health() -> dict[str, Any]:
         "provider": LLM_PROVIDER,
         "model": GEMINI_MODEL if LLM_PROVIDER == "gemini" else "hf",
         "disclaimer": DISCLAIMER,
+        "langfuse": langfuse_enabled(),
     }
 
 

@@ -87,3 +87,21 @@ Le routing V1 est **testable** (mots-clés ROE, risk, margin…). Pas besoin d�
 `POST /ask` sur FastAPI = même pattern que les labs `langchain-lab` (events `step` + `final`). Prêt pour une UI React.
 
 Prochaine étape : **Langfuse** (traces par nœud) puis **HITL**.
+
+---
+
+## Phase 5 — Langfuse (fait)
+
+### Callback sur le graphe, pas sur chaque fichier
+
+On passe `config={"callbacks": [CallbackHandler()]}` à `app.stream()`. LangGraph propage aux `invoke()` LLM des workers — pas besoin de modifier `rag/worker.py` et `calc/worker.py` un par un.
+
+### Optionnel = zéro clé
+
+Sans `LANGFUSE_PUBLIC_KEY` / `SECRET`, `run_config()` renvoie `{}` — pas de crash, pas de coût.
+
+### flush()
+
+`flush_langfuse()` en `finally` après chaque run pour que les traces partent avant la fin du process CLI.
+
+Prochaine étape : **HITL** (`interrupt` avant conclusion d’investissement).

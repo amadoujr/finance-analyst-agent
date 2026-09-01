@@ -77,7 +77,7 @@ Utilisateur → Supervisor
 | Worker RAG | fait (FAISS + MiniLM + CLI ask) |
 | Worker Calcul | fait (ratios CSV + tests + CLI --calc) |
 | Supervisor + SSE | fait (LangGraph route rag/calc/both) |
-| Langfuse | à faire |
+| Langfuse | fait (CallbackHandler sur graphe) |
 | HITL + UI | à faire |
 | Éval + CI | à faire |
 | Cloud Run | à faire |
@@ -88,7 +88,7 @@ Prérequis : Python ≥ 3.11, [`uv`](https://github.com/astral-sh/uv), clé Gemi
 
 ```bash
 cd finance-analyst-agent
-cp .env.example .env   # renseigner GOOGLE_API_KEY (+ SEC_USER_AGENT pour le fetch)
+cp .env.example .env   # GOOGLE_API_KEY + optionnel LANGFUSE_* (voir docs/OBSERVABILITY.md)
 uv sync
 
 # Télécharger les 10-K (une fois) → data/raw/
@@ -118,7 +118,7 @@ Le README = vue **produit / recruteur**. Les détails « pourquoi c’est compli
 | `docs/RAG_FINANCE.md` | PDF, chunking, hallucinations chiffres |
 | `docs/LANGGRAPH_GRAPH.md` | State, nodes, edges, SSE |
 | `docs/HITL_GOVERNANCE.md` | Pourquoi bloquer les reco |
-| `docs/OBSERVABILITY.md` | Langfuse vs logs / vs LangSmith |
+| `docs/OBSERVABILITY.md` | Langfuse vs LangSmith, activer les traces |
 | `docs/GCP_CLOUDRUN.md` | Pas-à-pas GCP pour débutants |
 
 ## Roadmap (hors V1)

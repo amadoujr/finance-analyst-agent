@@ -7,6 +7,7 @@ from typing import Any
 
 from finance_analyst.config import DISCLAIMER, GEMINI_MODEL, LLM_PROVIDER
 from finance_analyst.graph.build import get_app
+from finance_analyst.observability.langfuse import flush_langfuse, langfuse_enabled, run_config
 
 NODE_LABELS = {
     "classify": "Supervisor",
@@ -32,14 +33,20 @@ def stream_analyze(
         "provider": LLM_PROVIDER,
         "model": GEMINI_MODEL,
         "disclaimer": DISCLAIMER,
+        "langfuse": langfuse_enabled(),
     }
 
     app = get_app()
     inputs: dict[str, Any] = {"question": q, "ticker": ticker}
     route = ""
+    graph_config = run_config(ticker=ticker)
 
     try:
-        for chunk in app.stream(inputs, stream_mode="updates"):
+        for chunk in app.stream(
+            inputs,
+            config=graph_config,
+            stream_mode="updates",
+        ):
             for node, update in chunk.items():
                 if node == "classify":
                     route = str(update.get("route", route))
@@ -72,6 +79,8 @@ def stream_analyze(
                     }
     except Exception as exc:  # noqa: BLE001
         yield {"type": "error", "message": str(exc)}
+    finally:
+        flush_langfuse()
 
 
 def analyze(question: str, *, ticker: str | None = None) -> dict[str, Any]:
