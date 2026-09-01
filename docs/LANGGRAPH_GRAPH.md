@@ -68,5 +68,5 @@ CLI : `stream_analyze` agrégé dans `analyze()` pour l’affichage synchrone.
 ## Limites V1
 
 - Pas encore **HITL** (interrupt avant reco d’investissement)
-- Pas **Langfuse** dans le graphe (phase suivante)
+- Pas **LangSmith** dans le graphe (branché via env `LANGCHAIN_*`)
 - Route `both` = séquentiel RAG puis Calcul, pas parallèle

@@ -24,11 +24,7 @@ EMBEDDING_MODEL = os.getenv(
     "sentence-transformers/all-MiniLM-L6-v2",
 )
 
-LANGFUSE_HOST = (
-    os.getenv("LANGFUSE_HOST")
-    or os.getenv("LANGFUSE_BASE_URL")
-    or "https://cloud.langfuse.com"
-).strip()
+LANGCHAIN_PROJECT = os.getenv("LANGCHAIN_PROJECT", "finance-analyst-agent").strip()
 
 DISCLAIMER = (
     "Ceci n’est pas un conseil d’investissement. "

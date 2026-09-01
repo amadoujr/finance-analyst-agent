@@ -32,7 +32,7 @@ Un graphe **LangGraph** avec un **supervisor** qui route vers :
 | **RAG** | Retrieval sur 10-K (embeddings MiniLM + secours lexical) + citations |
 | **Calcul** | Outils Python (ratios) sur un CSV de fondamentaux seedés |
 | **HITL** | `interrupt()` avant d’afficher une conclusion sensible |
-| **Langfuse** | Traces des runs (observabilité) |
+| **LangSmith** | Traces des runs (observabilité native LangChain) |
 
 Déploiement cible : **Docker → GCP Cloud Run** (≥ 1 Gi RAM). LLM : **Gemini** (HF en fallback). Pas Claude.
 
@@ -50,7 +50,7 @@ Utilisateur → Supervisor
 - RAG finance avec citations + refus hors corpus
 - Calcul déterministe (tools) pour les ratios — pas « inventer » un ROE
 - Human-in-the-loop (gouvernance)
-- Observabilité Langfuse
+- Observabilité LangSmith
 - Déploiement cloud GCP (apprentissage guidé dans `docs/`)
 
 ## Stack
@@ -64,7 +64,7 @@ Utilisateur → Supervisor
 | Quanti | `data/structured/fundamentals.csv` |
 | API | FastAPI SSE (à venir) |
 | UI | React + Vite (à venir) |
-| Observabilité | Langfuse |
+| Observabilité | LangSmith (`LANGCHAIN_TRACING_V2`) |
 | Deploy | Cloud Run (GCP) |
 | CI | GitHub Actions + éval smoke |
 
@@ -77,7 +77,7 @@ Utilisateur → Supervisor
 | Worker RAG | fait (FAISS + MiniLM + CLI ask) |
 | Worker Calcul | fait (ratios CSV + tests + CLI --calc) |
 | Supervisor + SSE | fait (LangGraph route rag/calc/both) |
-| Langfuse | fait (CallbackHandler sur graphe) |
+| LangSmith | fait (tracing natif LangChain) |
 | HITL + UI | à faire |
 | Éval + CI | à faire |
 | Cloud Run | à faire |
@@ -88,7 +88,7 @@ Prérequis : Python ≥ 3.11, [`uv`](https://github.com/astral-sh/uv), clé Gemi
 
 ```bash
 cd finance-analyst-agent
-cp .env.example .env   # GOOGLE_API_KEY + optionnel LANGFUSE_* (voir docs/OBSERVABILITY.md)
+cp .env.example .env   # GOOGLE_API_KEY + optionnel LANGCHAIN_* (voir docs/OBSERVABILITY.md)
 uv sync
 
 # Télécharger les 10-K (une fois) → data/raw/
@@ -118,7 +118,7 @@ Le README = vue **produit / recruteur**. Les détails « pourquoi c’est compli
 | `docs/RAG_FINANCE.md` | PDF, chunking, hallucinations chiffres |
 | `docs/LANGGRAPH_GRAPH.md` | State, nodes, edges, SSE |
 | `docs/HITL_GOVERNANCE.md` | Pourquoi bloquer les reco |
-| `docs/OBSERVABILITY.md` | Langfuse vs LangSmith, activer les traces |
+| `docs/OBSERVABILITY.md` | LangSmith — activer les traces |
 | `docs/GCP_CLOUDRUN.md` | Pas-à-pas GCP pour débutants |
 
 ## Roadmap (hors V1)

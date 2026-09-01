@@ -6,7 +6,7 @@ Ce fichier se remplit **au fur et à mesure**. Objectif : expliquer les choix et
 
 ### Pourquoi un repo séparé de `langchain-lab` ?
 
-Les labs 01–05 sont une **progression d’apprentissage**. Ce projet est un **produit portfolio cloud** (GCP, multi-agents, HITL, Langfuse). Un repo dédié clarifie le message recruteur : « voici une app déployable », pas « encore une étape du tuto ».
+Les labs 01–05 sont une **progression d’apprentissage**. Ce projet est un **produit portfolio cloud** (GCP, multi-agents, HITL, LangSmith). Un repo dédié clarifie le message recruteur : « voici une app déployable », pas « encore une étape du tuto ».
 
 ### Pourquoi `uv` + package `src/` ?
 
@@ -86,22 +86,22 @@ Le routing V1 est **testable** (mots-clés ROE, risk, margin…). Pas besoin d�
 
 `POST /ask` sur FastAPI = même pattern que les labs `langchain-lab` (events `step` + `final`). Prêt pour une UI React.
 
-Prochaine étape : **Langfuse** (traces par nœud) puis **HITL**.
+Prochaine étape : **HITL** (`interrupt` avant conclusion d’investissement).
 
 ---
 
-## Phase 5 — Langfuse (fait)
+## Phase 5 — LangSmith (fait)
 
-### Callback sur le graphe, pas sur chaque fichier
+### Tracing natif LangChain
 
-On passe `config={"callbacks": [CallbackHandler()]}` à `app.stream()`. LangGraph propage aux `invoke()` LLM des workers — pas besoin de modifier `rag/worker.py` et `calc/worker.py` un par un.
+Avec `LANGCHAIN_TRACING_V2=true` + `LANGCHAIN_API_KEY`, les `invoke()` Gemini dans les workers sont tracés **automatiquement** — pas de `CallbackHandler` Langfuse à maintenir.
 
-### Optionnel = zéro clé
+### run_config()
 
-Sans `LANGFUSE_PUBLIC_KEY` / `SECRET`, `run_config()` renvoie `{}` — pas de crash, pas de coût.
+On passe quand même `run_name`, `tags` et `metadata` (ticker) à `app.stream()` pour retrouver les runs dans le bon projet LangSmith.
 
-### flush()
+### flush
 
-`flush_langfuse()` en `finally` après chaque run pour que les traces partent avant la fin du process CLI.
+`wait_for_all_tracers()` en fin de run CLI pour ne pas perdre les traces sur un process court.
 
 Prochaine étape : **HITL** (`interrupt` avant conclusion d’investissement).

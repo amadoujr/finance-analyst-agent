@@ -1,62 +1,51 @@
-# Observabilité — Langfuse
+# Observabilité — LangSmith
 
-## Pourquoi Langfuse (et pas seulement des logs) ?
+## Pourquoi LangSmith ici ?
 
-En multi-agents, une question peut traverser **classify → RAG → calc → synthesize**, avec plusieurs appels Gemini. Les `print()` ne suffisent pas pour :
+Ce projet est construit avec **LangChain** et **LangGraph**. LangSmith est l’outil de tracing **natif** de cet écosystème : peu de code, traces automatiques des runs LLM et des nœuds du graphe.
 
-- voir la **latence** par nœud
-- compter les **tokens** / coûts
-- déboguer une régression après un changement de prompt
+## Activer
 
-**Langfuse** enregistre des **traces** (runs LangChain/LangGraph) dans un dashboard web — utile en entretien (« voici comment je observe une app agents en prod »).
-
-## Langfuse vs LangSmith
-
-| | Langfuse | LangSmith |
-|---|---|---|
-| Vendor | OSS + cloud free tier | LangChain |
-| Setup | `LANGFUSE_*` + `CallbackHandler` | `LANGCHAIN_TRACING_V2=true` |
-| Dashboard | cloud.langfuse.com | smith.langchain.com |
-| Ce repo | **branché** | documenté seulement |
-
-LangSmith serait 2 variables d’env — on a choisi Langfuse pour l’indépendance et le free tier clair.
-
-## Activer (cloud free)
-
-1. Compte sur [https://cloud.langfuse.com](https://cloud.langfuse.com)
-2. Créer un projet → récupérer **Public** + **Secret** key
+1. Compte sur [https://smith.langchain.com](https://smith.langchain.com)
+2. Créer une clé API (Settings → API Keys)
 3. Dans `.env` :
 
 ```bash
-LANGFUSE_PUBLIC_KEY=pk-lf-...
-LANGFUSE_SECRET_KEY=sk-lf-...
-LANGFUSE_HOST=https://cloud.langfuse.com   # EU ; US: https://us.cloud.langfuse.com
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=lsv2_...
+LANGCHAIN_PROJECT=finance-analyst-agent
 ```
 
-4. Relancer une analyse :
+4. Lancer une analyse :
 
 ```bash
 uv run python -m finance_analyst --ticker AAPL "ROE and risk factors?"
 ```
 
-5. Ouvrir Langfuse → **Traces** : tu dois voir un run `finance-analyze` avec spans LLM (grade, generate) imbriqués.
+5. Ouvrir LangSmith → projet `finance-analyst-agent` → tu vois le run `finance-analyze` avec les spans (grade, generate, etc.).
 
-Sans clés : **aucun effet** — l’app tourne normalement (`langfuse: false` dans `/health`).
+Sans clé ou avec `LANGCHAIN_TRACING_V2=false` : **aucun tracing** (`langsmith: false` dans `/health`).
 
 ## Comment c’est branché
 
 | Fichier | Rôle |
 |---|---|
-| `observability/langfuse.py` | Init client + `CallbackHandler` + `run_config()` |
-| `graph/runner.py` | Passe `config={"callbacks": [...]}` à `app.stream()` + `flush()` en fin |
+| `observability/langsmith.py` | Détecte si tracing actif + `run_config()` (run_name, tags, metadata) |
+| `graph/runner.py` | Passe `config` à `app.stream()` ; `wait_for_all_tracers()` en fin de run CLI |
 
-Les appels `get_llm().invoke()` dans les workers RAG héritent du callback LangGraph parent.
+Pas de `CallbackHandler` manuel : avec `LANGCHAIN_TRACING_V2=true`, LangChain **instrumente** automatiquement les appels `invoke()` dans les workers RAG.
 
-## Tags / metadata
+## Metadata
 
-Chaque run porte le tag `finance-analyst`. Optionnel : `ticker` dans metadata si `--ticker` est fourni.
+- `run_name`: `finance-analyze`
+- `tags`: `finance-analyst`
+- `metadata.ticker` si `--ticker` est fourni
+
+## Langfuse ?
+
+Retiré de ce repo (V1 utilisait Langfuse pour montrer une alternative OSS). Pour un projet 100 % LangChain/LangGraph, **LangSmith est le choix cohérent**.
 
 ## Limites V1
 
-- Pas encore de score Ragas envoyé à Langfuse
-- Pas de trace séparée par utilisateur (auth) — session_id à ajouter avec l’UI
+- Pas encore de scores Ragas exportés vers LangSmith
+- Pas de `session_id` côté UI (à ajouter avec le front React)

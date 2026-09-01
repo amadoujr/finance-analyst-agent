@@ -1,15 +1,13 @@
 """Observability helpers."""
 
-from finance_analyst.observability.langfuse import (
-    flush_langfuse,
-    get_langfuse_handler,
-    langfuse_enabled,
+from finance_analyst.observability.langsmith import (
+    flush_tracing,
+    langsmith_enabled,
     run_config,
 )
 
 __all__ = [
-    "flush_langfuse",
-    "get_langfuse_handler",
-    "langfuse_enabled",
+    "flush_tracing",
+    "langsmith_enabled",
     "run_config",
 ]
