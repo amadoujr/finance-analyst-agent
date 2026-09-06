@@ -5,8 +5,6 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from finance_analyst.config import LANGCHAIN_PROJECT
-
 
 def langsmith_enabled() -> bool:
     key = os.getenv("LANGCHAIN_API_KEY", "").strip()
@@ -28,7 +26,8 @@ def run_config(
     if not langsmith_enabled():
         return {}
 
-    metadata: dict[str, Any] = {"project": LANGCHAIN_PROJECT}
+    project = os.getenv("LANGCHAIN_PROJECT", "finance-analyst-agent").strip()
+    metadata: dict[str, Any] = {"project": project}
     if session_id:
         metadata["session_id"] = session_id
     if ticker:

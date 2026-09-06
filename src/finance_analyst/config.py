@@ -12,6 +12,14 @@ load_dotenv(ROOT / ".env")
 # Reuse lab keys if present (local convenience)
 load_dotenv(ROOT.parent / "langchain-lab" / ".env", override=False)
 
+# Legacy LANGCHAIN_TRACING=true breaks modern LangChain (forces TracerV1).
+# Prefer LANGCHAIN_TRACING_V2; drop the old flag if present.
+_legacy = os.getenv("LANGCHAIN_TRACING", "").strip().lower()
+if _legacy in ("1", "true", "yes"):
+    if not os.getenv("LANGCHAIN_TRACING_V2"):
+        os.environ["LANGCHAIN_TRACING_V2"] = "true"
+    os.environ.pop("LANGCHAIN_TRACING", None)
+
 DATA_DIR = ROOT / "data"
 RAW_DIR = DATA_DIR / "raw"
 STRUCTURED_DIR = DATA_DIR / "structured"

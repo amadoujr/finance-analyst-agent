@@ -62,7 +62,7 @@ Utilisateur → Supervisor
 | Embeddings | `all-MiniLM-L6-v2` (LangChain HuggingFaceEmbeddings) |
 | Vector store | FAISS (fichier) |
 | Quanti | `data/structured/fundamentals.csv` |
-| API | FastAPI SSE (à venir) |
+| API | FastAPI SSE (`/ask`, `/resume`) |
 | UI | React + Vite (à venir) |
 | Observabilité | LangSmith (`LANGCHAIN_TRACING_V2`) |
 | Deploy | Cloud Run (GCP) |
@@ -78,7 +78,8 @@ Utilisateur → Supervisor
 | Worker Calcul | fait (ratios CSV + tests + CLI --calc) |
 | Supervisor + SSE | fait (LangGraph route rag/calc/both) |
 | LangSmith | fait (tracing natif LangChain) |
-| HITL + UI | à faire |
+| HITL + API resume | fait (`interrupt` + `/resume`) |
+| UI React | à faire |
 | Éval + CI | à faire |
 | Cloud Run | à faire |
 
@@ -105,7 +106,14 @@ uv run python -m finance_analyst --rag --ticker AAPL "risk factors?"
 uv run python -m finance_analyst --calc --ticker AAPL "What is the ROE?"
 
 uv run uvicorn finance_analyst.api:app --reload --port 8080
-# POST http://127.0.0.1:8080/ask  (SSE)
+# POST /ask  (SSE) — peut renvoyer type=interrupt
+# POST /resume { thread_id, action: approve|edit|reject }
+```
+
+Question sensible (HITL) :
+
+```bash
+uv run python -m finance_analyst --ticker AAPL "Should I buy Apple stock?" --auto-resume reject
 ```
 
 ## Documentation pédagogique
@@ -117,7 +125,7 @@ Le README = vue **produit / recruteur**. Les détails « pourquoi c’est compli
 | [`docs/LEARNING.md`](docs/LEARNING.md) | Fil conducteur phase par phase |
 | `docs/RAG_FINANCE.md` | PDF, chunking, hallucinations chiffres |
 | `docs/LANGGRAPH_GRAPH.md` | State, nodes, edges, SSE |
-| `docs/HITL_GOVERNANCE.md` | Pourquoi bloquer les reco |
+| `docs/HITL_GOVERNANCE.md` | Pourquoi bloquer les reco + interrupt/resume |
 | `docs/OBSERVABILITY.md` | LangSmith — activer les traces |
 | `docs/GCP_CLOUDRUN.md` | Pas-à-pas GCP pour débutants |
 

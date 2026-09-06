@@ -13,6 +13,10 @@ class AnalystState(TypedDict, total=False):
     rag_grade: Literal["ok", "refuse"]
     calc_answer: str
     calc_grade: Literal["ok", "refuse"]
+    draft: str
+    needs_human: bool
+    human_decision: Literal["approve", "edit", "reject"] | None
+    human_edit: str
     answer: str
     citations: list[dict[str, str]]
     ratios: dict[str, Any]

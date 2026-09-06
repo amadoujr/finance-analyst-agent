@@ -67,6 +67,6 @@ CLI : `stream_analyze` agrégé dans `analyze()` pour l’affichage synchrone.
 
 ## Limites V1
 
-- Pas encore **HITL** (interrupt avant reco d’investissement)
-- Pas **LangSmith** dans le graphe (branché via env `LANGCHAIN_*`)
+- Checkpointer MemorySaver (HITL) — état perdu au redémarrage process
+- Pas encore **UI React**
 - Route `both` = séquentiel RAG puis Calcul, pas parallèle

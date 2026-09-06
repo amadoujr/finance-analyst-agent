@@ -105,3 +105,21 @@ On passe quand même `run_name`, `tags` et `metadata` (ticker) à `app.stream()`
 `wait_for_all_tracers()` en fin de run CLI pour ne pas perdre les traces sur un process court.
 
 Prochaine étape : **HITL** (`interrupt` avant conclusion d’investissement).
+
+---
+
+## Phase 6 — HITL (fait)
+
+### interrupt() ≠ disclaimer
+
+Un disclaimer en bas de réponse ne suffit pas. On **pause** le graphe (`interrupt`) avant de publier une reco d’achat/vente.
+
+### MemorySaver + thread_id
+
+Sans checkpointer, impossible de reprendre. V1 = mémoire process ; Cloud Run multi-instances demandera un store partagé plus tard.
+
+### API /resume
+
+Le front (prochaine phase) affichera Approve / Edit / Reject et rappellera `POST /resume` avec le `thread_id`.
+
+Prochaine étape : **UI React** (steps SSE + panneau HITL).
