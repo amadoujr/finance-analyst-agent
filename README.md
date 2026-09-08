@@ -63,7 +63,7 @@ Utilisateur → Supervisor
 | Vector store | FAISS (fichier) |
 | Quanti | `data/structured/fundamentals.csv` |
 | API | FastAPI SSE (`/ask`, `/resume`) |
-| UI | React + Vite (à venir) |
+| UI | React + Vite (`web/`, port 5176) |
 | Observabilité | LangSmith (`LANGCHAIN_TRACING_V2`) |
 | Deploy | Cloud Run (GCP) |
 | CI | GitHub Actions + éval smoke |
@@ -79,7 +79,7 @@ Utilisateur → Supervisor
 | Supervisor + SSE | fait (LangGraph route rag/calc/both) |
 | LangSmith | fait (tracing natif LangChain) |
 | HITL + API resume | fait (`interrupt` + `/resume`) |
-| UI React | à faire |
+| UI React | fait (chat + steps SSE + panneau HITL) |
 | Éval + CI | à faire |
 | Cloud Run | à faire |
 
@@ -108,6 +108,10 @@ uv run python -m finance_analyst --calc --ticker AAPL "What is the ROE?"
 uv run uvicorn finance_analyst.api:app --reload --port 8080
 # POST /ask  (SSE) — peut renvoyer type=interrupt
 # POST /resume { thread_id, action: approve|edit|reject }
+
+# UI React (autre terminal)
+cd web && npm install && npm run dev
+# → http://127.0.0.1:5176  (proxy /ask /resume /health → :8080)
 ```
 
 Question sensible (HITL) :

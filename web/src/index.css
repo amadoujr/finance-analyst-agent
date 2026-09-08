@@ -1,0 +1,42 @@
+:root {
+  --bg: #0f1419;
+  --bg-elev: #171e26;
+  --panel: #1c2530;
+  --ink: #e8eef4;
+  --muted: #8b9aab;
+  --line: rgba(232, 238, 244, 0.12);
+  --accent: #2dd4bf;
+  --accent-dim: rgba(45, 212, 191, 0.14);
+  --warn: #f0b429;
+  --warn-dim: rgba(240, 180, 41, 0.12);
+  --danger: #f07178;
+  --ok: #7fd99a;
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(45, 212, 191, 0.12), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, rgba(240, 180, 41, 0.08), transparent 50%),
+    var(--bg);
+  line-height: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+button,
+textarea,
+input,
+select {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}

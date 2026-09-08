@@ -123,3 +123,17 @@ Sans checkpointer, impossible de reprendre. V1 = mémoire process ; Cloud Run mu
 Le front (prochaine phase) affichera Approve / Edit / Reject et rappellera `POST /resume` avec le `thread_id`.
 
 Prochaine étape : **UI React** (steps SSE + panneau HITL).
+
+---
+
+## Phase 7 — UI React (fait)
+
+### Même pattern que la hotline
+
+Chat + events SSE (`step` / `final` / `interrupt`). Le panneau HITL apparaît quand l’API envoie `type: interrupt` ; Approve / Edit / Reject appelle `POST /resume`.
+
+### Dev local
+
+API `:8080`, Vite `:5176` avec proxy. En prod (Cloud Run), on servira `web/dist` depuis FastAPI.
+
+Prochaine étape : **éval + CI**, puis **GCP Cloud Run**.
