@@ -1,0 +1,28 @@
+# Upload context for Cloud Build. Keep data/raw: Docker builds the index from it.
+# Do not include .gitignore: it excludes the required local SEC filings.
+.gcloudignore
+.git/
+.github/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.env
+.env.*
+*.pem
+*.key
+.aws/
+.codex/
+.agents/
+.cursor/
+web/node_modules/
+web/dist/
+data/index/
+output/
+docs/
+tests/
+evals/
+*.log
+.DS_Store

@@ -1,4 +1,4 @@
-"""FastAPI — health + supervisor SSE + HITL resume."""
+"""FastAPI — health + supervisor SSE + HITL resume + static UI."""
 
 from __future__ import annotations
 
@@ -6,17 +6,27 @@ import asyncio
 import json
 import os
 from collections.abc import Iterator
+from pathlib import Path
 from typing import Any, Literal
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from finance_analyst import __version__
-from finance_analyst.config import DISCLAIMER, GEMINI_MODEL, LANGCHAIN_PROJECT, LLM_PROVIDER
+from finance_analyst.config import (
+    DISCLAIMER,
+    GEMINI_MODEL,
+    LANGCHAIN_PROJECT,
+    LLM_PROVIDER,
+    ROOT,
+)
 from finance_analyst.graph.runner import stream_analyze, stream_resume
 from finance_analyst.observability.langsmith import langsmith_enabled
+
+DIST = ROOT / "web" / "dist"
 
 app = FastAPI(
     title="finance-analyst-agent",
@@ -128,3 +138,32 @@ async def resume(body: ResumeRequest) -> StreamingResponse:
             "X-Accel-Buffering": "no",
         },
     )
+
+
+# Production: serve built React app (Docker / Cloud Run).
+if DIST.is_dir():
+    assets = DIST / "assets"
+    if assets.is_dir():
+        app.mount("/assets", StaticFiles(directory=assets), name="assets")
+
+    @app.get("/")
+    async def spa_index():
+        return FileResponse(DIST / "index.html")
+
+    @app.get("/{full_path:path}")
+    async def spa(full_path: str):
+        reserved = (
+            "ask",
+            "resume",
+            "health",
+            "docs",
+            "openapi.json",
+            "redoc",
+            "assets",
+        )
+        if full_path.startswith(reserved):
+            raise HTTPException(status_code=404)
+        candidate = DIST / full_path
+        if candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(DIST / "index.html")

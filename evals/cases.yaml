@@ -1,0 +1,65 @@
+# Eval cases — smoke (no LLM) + optional live (needs GOOGLE_API_KEY + index)
+#
+# kinds:
+#   route       — classify_route_heuristic only
+#   sensitive   — is_sensitive_question
+#   calc        — deterministic ratios from CSV
+#   hitl_graph  — mocked graph interrupt+reject (no network)
+#   live_rag    — real RAG (skip if no key / no index)
+#   live_hitl   — real HITL auto-reject (skip if no key / no index)
+
+cases:
+  - id: route-roe
+    kind: route
+    question: "What is Apple's ROE?"
+    expect_route: calc
+
+  - id: route-risk
+    kind: route
+    question: "What are the main risk factors?"
+    expect_route: rag
+
+  - id: route-both
+    kind: route
+    question: "What is Apple's ROE and what are the main risk factors?"
+    expect_route: both
+
+  - id: sensitive-buy
+    kind: sensitive
+    question: "Should I buy AAPL stock?"
+    expect_sensitive: true
+
+  - id: sensitive-safe
+    kind: sensitive
+    question: "What is Microsoft's net margin?"
+    expect_sensitive: false
+
+  - id: calc-aapl-roe
+    kind: calc
+    ticker: AAPL
+    expect_roe_approx: 0.1646
+    tolerance: 0.001
+
+  - id: calc-msft-margin
+    kind: calc
+    ticker: MSFT
+    expect_net_margin_approx: 0.3596
+    tolerance: 0.002
+
+  - id: hitl-mock
+    kind: hitl_graph
+    question: "Should I buy Apple stock?"
+    ticker: AAPL
+    auto_resume: reject
+
+  - id: live-rag-aapl
+    kind: live_rag
+    question: "What are Apple's principal risk factors?"
+    ticker: AAPL
+    require_grade: ok
+
+  - id: live-hitl-reject
+    kind: live_hitl
+    question: "Should I buy Apple stock?"
+    ticker: AAPL
+    auto_resume: reject

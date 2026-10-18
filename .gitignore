@@ -33,3 +33,6 @@ web/dist/
 
 # Misc
 *.log
+
+# Personal document drafts are not application source.
+output/

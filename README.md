@@ -34,7 +34,7 @@ Un graphe **LangGraph** avec un **supervisor** qui route vers :
 | **HITL** | `interrupt()` avant d’afficher une conclusion sensible |
 | **LangSmith** | Traces des runs (observabilité native LangChain) |
 
-Déploiement cible : **Docker → GCP Cloud Run** (≥ 1 Gi RAM). LLM : **Gemini** (HF en fallback). Pas Claude.
+Déploiement réalisé : **Docker → GCP Cloud Run**, accès privé (1 Gi RAM configuré). LLM : **Gemini** ; le provider HF n'est pas branché.
 
 ```
 Utilisateur → Supervisor
@@ -65,8 +65,8 @@ Utilisateur → Supervisor
 | API | FastAPI SSE (`/ask`, `/resume`) |
 | UI | React + Vite (`web/`, port 5176) |
 | Observabilité | LangSmith (`LANGCHAIN_TRACING_V2`) |
-| Deploy | Cloud Run (GCP) |
-| CI | GitHub Actions + éval smoke |
+| Deploy | Cloud Run (GCP) — voir [`docs/GCP_CLOUDRUN.md`](docs/GCP_CLOUDRUN.md) |
+| CI | GitHub Actions : pytest + eval smoke |
 
 ## État du repo (progression)
 
@@ -80,10 +80,18 @@ Utilisateur → Supervisor
 | LangSmith | fait (tracing natif LangChain) |
 | HITL + API resume | fait (`interrupt` + `/resume`) |
 | UI React | fait (chat + steps SSE + panneau HITL) |
-| Éval + CI | à faire |
-| Cloud Run | à faire |
+| Éval + CI | fait (cases.yaml + GitHub Actions) |
+| Cloud Run | déployé et testé en accès privé (image CPU, Secret Manager, IAM) |
 
-## Lancer (local)
+## Aperçus de la démonstration privée
+
+Captures de l'application exécutée sur Cloud Run, via un proxy authentifié. Le service cloud reste privé.
+
+![Analyse documentaire avec citations](docs/screenshots/finance-analyst-rag.jpg)
+
+![Validation humaine avant publication](docs/screenshots/finance-analyst-hitl.jpg)
+
+## Démarrage local
 
 Prérequis : Python ≥ 3.11, [`uv`](https://github.com/astral-sh/uv), clé Gemini.
 
@@ -132,6 +140,28 @@ Le README = vue **produit / recruteur**. Les détails « pourquoi c’est compli
 | `docs/HITL_GOVERNANCE.md` | Pourquoi bloquer les reco + interrupt/resume |
 | `docs/OBSERVABILITY.md` | LangSmith — activer les traces |
 | `docs/GCP_CLOUDRUN.md` | Pas-à-pas GCP pour débutants |
+
+## Éval & CI
+
+```bash
+uv run pytest -q
+uv run python scripts/run_evals.py          # smoke (pas de Gemini)
+uv run python scripts/run_evals.py --live   # + RAG/HITL si index + clé
+```
+
+GitHub Actions (`.github/workflows/ci.yml`) : sync → pytest → eval smoke.
+
+## Docker / Cloud Run
+
+La démonstration est déployée sur Cloud Run en `europe-west1`, avec une identité dédiée et une clé Gemini injectée depuis Secret Manager. Accès privé ; démonstration sur demande. Tests distants : interface, ratio, RAG avec citations et cycle HITL interruption/rejet.
+
+L'image CPU publiée occupe environ 632 Mo dans Artifact Registry, contre 3,17 Go pour la première version. Voir le guide pour les commandes, les permissions et l'accès par proxy ; le journal d'apprentissage conserve les mesures et les limites.
+
+```bash
+# data/raw/ doit être présent (fetch_edgar)
+docker build -t finance-analyst .
+# Puis suivre docs/GCP_CLOUDRUN.md (Artifact Registry, Secret Manager, 1Gi)
+```
 
 ## Roadmap (hors V1)
 
